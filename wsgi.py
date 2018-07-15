@@ -24,7 +24,7 @@ class IrcThread( threading.Thread ):
         # main
         #
         try:
-            # yikes SASL isentification ..
+            # yikes SASL identification ..
             b64auth = base64.b64encode(nick+"\x00"+nick+"\x00"+"i_am_"+nick)
             irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             irc.connect(('irc.freenode.net', 6667))
@@ -64,7 +64,7 @@ class IrcThread( threading.Thread ):
                     for l in logs:
                         msg =  "PRIVMSG %s : %s\r\n" % (me, l)
                         irc.send(msg)
-                        time.sleep(1)
+                        time.sleep(1) # actually, the "flood limit" is 2 seconds on freenode, but for 25 msgs, we'll fly under the radar
                     irc.send("PRIVMSG %s : that's it.\r\n" % me)
                 else:
                     if targ == channel: # don't log cv2
