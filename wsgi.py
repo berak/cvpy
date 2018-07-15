@@ -40,7 +40,7 @@ class IrcThread( threading.Thread ):
                 irc.send("PASS i_am_" + nick + "\r\n")
             irc.send("JOIN " + channel + "\r\n")
 
-        except : pass # ??
+        except : pass # ?? (i forgot how to do exception handliing in py3)
         print("started irc",irc,channel,nick)
         while irc != None:
             m = irc.recv(512)
@@ -50,9 +50,9 @@ class IrcThread( threading.Thread ):
             if m.find("PING") == 0:
                 irc.send("PONG 12345\r\n")
 
-            me = m[1:m.find('!')]
-            targ = channel
-            to = channel
+            me = m[1:m.find('!')] # whoo sent the msg
+            targ = channel # where *was* it sent to
+            to = channel # where *should* it go to now.
             pm = m.find("PRIVMSG %s :" % channel)
             if pm<0:
                 pm = m.find("PRIVMSG %s :" % nick)
@@ -74,7 +74,7 @@ class IrcThread( threading.Thread ):
                             del logs[0]
         irc.close()
 
-# it only needs a seperate thread for running on paas !
+# it only needs a seperate thread for running on paas ! (else the run() method() would be the whole application.)
 t1 = IrcThread()
 t1.start()
 
