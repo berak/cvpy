@@ -1,4 +1,4 @@
-import io, os, sys, socket, threading, subprocess
+import socket, threading
 import time, datetime, base64
 
 
@@ -24,6 +24,7 @@ class IrcThread( threading.Thread ):
         # main
         #
         try:
+            # yikes SASL isentification ..
             b64auth = base64.b64encode(nick+"\x00"+nick+"\x00"+"i_am_"+nick)
             irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             irc.connect(('irc.freenode.net', 6667))
@@ -38,14 +39,14 @@ class IrcThread( threading.Thread ):
             else:
                 irc.send("PASS i_am_" + nick + "\r\n")
             irc.send("JOIN " + channel + "\r\n")
-            #irc.send("Nickserv identify i_am_cv2\r\n")
-        except Exception,e: print(e)
+
+        except : pass # ??
         print("started irc",irc,channel,nick)
         while irc != None:
             m = irc.recv(512)
             if len(m)==0 or m == "\r\n":
                 continue
-            print m
+            #print(m)
             if m.find("PING") == 0:
                 irc.send("PONG 12345\r\n")
 
@@ -58,7 +59,6 @@ class IrcThread( threading.Thread ):
                 to = nick
             if pm > 0:
                 d,t = now()
-                d = "/" + d
                 txt = m[pm+10+len(to):-2]
                 if txt.find(".last") == 0:
                     for l in logs:
@@ -74,13 +74,12 @@ class IrcThread( threading.Thread ):
                             del logs[0]
         irc.close()
 
-
+# it only needs a seperate thread for running on paas !
 t1 = IrcThread()
 t1.start()
 
 
-
-
+# only nessecary for running on paas platforms like heroku, or openshift
 def application(environ, start_response):
     data = "helo."
     start_response("200 OK", [
