@@ -4,7 +4,7 @@ import time, datetime, base64
 
 logs=[];
 channel = "#opencv"
-nick = 'cvtail'
+nick = 'cv2'
 
 
 def now():
