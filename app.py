@@ -33,11 +33,13 @@ def run_bot():
         irc.send("PASS i_am_" + nick + "\r\n")
     irc.send("JOIN " + channel + "\r\n")
     print("started irc",irc,channel,nick)
+    mc=0
     while irc != None:
         m = irc.recv(512)
         if len(m)==0 or m == "\r\n":
             continue
-        #print(m)
+        if mc < 100: print(m)
+        mc += 1
         if m.find("PING") == 0:
             irc.send("PONG 12345\r\n")
 
