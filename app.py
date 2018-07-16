@@ -17,24 +17,21 @@ def run_bot():
     #
     # main
     #
-    try:
-        # yikes SASL identification ..
-        b64auth = base64.b64encode(nick+"\x00"+nick+"\x00"+"i_am_"+nick)
-        irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        irc.connect(('irc.freenode.net', 6667))
-        irc.send("CAP REQ :sasl\r\n")
-        irc.send("NICK " + nick + "\r\n")
-        irc.send("USER " + nick + " 12 * :"+nick+"\r\n")
-        m = irc.recv(512)
-        if m.find("ACK :sasl"):
-            irc.send("AUTHENTICATE PLAIN\r\n")
-            irc.send("AUTHENTICATE "+b64auth+"\r\n")
-            irc.send("CAP END\r\n")
-        else:
-            irc.send("PASS i_am_" + nick + "\r\n")
-        irc.send("JOIN " + channel + "\r\n")
-
-    except : pass # ?? (i forgot how to do exception handliing in py3)
+    # yikes SASL identification ..
+    b64auth = base64.b64encode(nick+"\x00"+nick+"\x00"+"i_am_"+nick)
+    irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    irc.connect(('irc.freenode.net', 6667))
+    irc.send("CAP REQ :sasl\r\n")
+    irc.send("NICK " + nick + "\r\n")
+    irc.send("USER " + nick + " 12 * :"+nick+"\r\n")
+    m = irc.recv(512)
+    if m.find("ACK :sasl"):
+        irc.send("AUTHENTICATE PLAIN\r\n")
+        irc.send("AUTHENTICATE "+b64auth+"\r\n")
+        irc.send("CAP END\r\n")
+    else:
+        irc.send("PASS i_am_" + nick + "\r\n")
+    irc.send("JOIN " + channel + "\r\n")
     print("started irc",irc,channel,nick)
     while irc != None:
         m = irc.recv(512)
