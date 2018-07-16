@@ -37,7 +37,7 @@ def run_bot():
         m = irc.recv(512)
         if len(m)==0 or m == "\r\n":
             continue
-        print(m)
+        #print(m)
         if m.find("PING") == 0:
             irc.send("PONG 12345\r\n")
 
