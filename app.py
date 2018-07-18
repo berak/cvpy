@@ -17,7 +17,7 @@ def run_bot():
     #
     # main
     #
-    # yikes SASL identification ..
+    # yikes, SASL identification ..
     b64auth = base64.b64encode(nick+"\x00"+nick+"\x00"+"i_am_"+nick)
     irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     irc.connect(('irc.freenode.net', 6667))
@@ -36,6 +36,8 @@ def run_bot():
     mc=0
     while irc != None:
         m = irc.recv(512)
+        if not m:
+            break
         if len(m)==0 or m == "\r\n":
             continue
         if mc < 60: print(m)
@@ -68,4 +70,5 @@ def run_bot():
     irc.close()
 
 if __name__ == '__main__':
-    run_bot()
+    while(True):
+        run_bot()
