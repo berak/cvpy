@@ -59,6 +59,10 @@ def run_bot():
             txt = m[pm+10+len(to):-2]
             if txt.find(".clear") == 0:
                 logs=[]
+                msg =  "PRIVMSG %s : ok.\r\n" % (me,)
+                irc.send(msg)
+                continue
+
             if txt.find(".tail") == 0:
                 tt = txt.split(" ")[1]
                 if tt: ntail=int(tt)
