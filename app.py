@@ -5,7 +5,8 @@ import time, datetime, base64
 logs=[];
 channel = "#opencv"
 nick = 'cvtail'
-
+maxn = 100
+ntail = 25
 
 def now():
     d = datetime.datetime.now().strftime("%d_%m_%Y")
@@ -56,8 +57,14 @@ def run_bot():
         if pm > 0:
             d,t = now()
             txt = m[pm+10+len(to):-2]
+            if txt.find(".clear") == 0:
+                logs=[]
             if txt.find(".tail") == 0:
-                for l in logs:
+                tt = txt.split(" ")[1]
+                if tt: ntail=int(tt)
+                off = max(len(logs) - ntail, 0)
+
+                for l in logs[off:]:
                     msg =  "PRIVMSG %s : %s\r\n" % (me, l)
                     irc.send(msg)
                     time.sleep(1) # actually, the "flood limit" is 2 seconds on freenode, but for 25 msgs, we'll fly under the radar
@@ -66,7 +73,7 @@ def run_bot():
                 if targ != channel: # don't log cv2
                     line = "[%s] %s:\t%s" % (t,me,txt)
                     logs.append(line)
-                    if len(logs) > 25:
+                    if len(logs) > maxn:
                         del logs[0]
     irc.close()
 
