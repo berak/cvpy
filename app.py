@@ -33,6 +33,7 @@ def run_bot():
         irc.send("PASS i_am_" + nick + "\r\n")
     irc.send("JOIN " + channel + "\r\n")
     print("started irc",irc,channel,nick)
+
     mc=0
     while irc != None:
         m = irc.recv(512)
@@ -62,7 +63,7 @@ def run_bot():
                     time.sleep(1) # actually, the "flood limit" is 2 seconds on freenode, but for 25 msgs, we'll fly under the radar
                 irc.send("PRIVMSG %s : that's it.\r\n" % me)
             else:
-                if targ == channel: # don't log cv2
+                if targ != channel: # don't log cv2
                     line = "[%s] %s:\t%s" % (t,me,txt)
                     logs.append(line)
                     if len(logs) > 25:
