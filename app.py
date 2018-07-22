@@ -64,8 +64,8 @@ def run_bot():
                 continue
 
             if txt.find(".tail") == 0:
-                tt = txt.split(" ")[1]
-                if tt: ntail=int(tt)
+                tt = txt.split(" ")
+                if len(tt)>1: ntail=int(tt[1])
                 off = max(len(logs) - ntail, 0)
 
                 for l in logs[off:]:
