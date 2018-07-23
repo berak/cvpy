@@ -2,11 +2,6 @@ import socket
 import time, datetime, base64
 
 
-logs=[];
-channel = "#opencv"
-nick = 'cvtail'
-maxn = 100
-ntail = 25
 
 def now():
     d = datetime.datetime.now().strftime("%d_%m_%Y")
@@ -15,6 +10,12 @@ def now():
 
 
 def run_bot():
+    logs=[];
+    channel = "#opencv"
+    nick = 'cvtail'
+    maxn = 100
+    ntail = 25
+
     #
     # main
     #
@@ -62,11 +63,18 @@ def run_bot():
                 msg =  "PRIVMSG %s : ok.\r\n" % (me,)
                 irc.send(msg)
                 continue
+            if txt.find(".size") == 0:
+                msg =  "PRIVMSG %s : %d.\r\n" % (me,len(logs))
+                irc.send(msg)
+                continue
 
             if txt.find(".tail") == 0:
                 tt = txt.split(" ")
-                if len(tt)>1: ntail=int(tt[1])
-                off = max(len(logs) - ntail, 0)
+                nt = ntail
+                if len(tt) > 1:
+                    try: nt = int(tt[1])
+                    except: pass
+                off = max(len(logs) - nt, 0)
 
                 for l in logs[off:]:
                     msg =  "PRIVMSG %s : %s\r\n" % (me, l)
@@ -74,11 +82,12 @@ def run_bot():
                     time.sleep(1) # actually, the "flood limit" is 2 seconds on freenode, but for 25 msgs, we'll fly under the radar
                 irc.send("PRIVMSG %s : that's it.\r\n" % me)
             else:
-                if targ != channel: # don't log cv2
+                if targ != nick: # don't log cv2
                     line = "[%s] %s:\t%s" % (t,me,txt)
                     logs.append(line)
                     if len(logs) > maxn:
                         del logs[0]
+                    #print(len(logs), line)
     irc.close()
 
 if __name__ == '__main__':
