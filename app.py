@@ -68,19 +68,25 @@ def run_bot():
                 irc.send(msg)
                 continue
 
-            if txt.find(".tail") == 0:
+            istail = (txt.find(".tail") == 0)
+            ishead = (txt.find(".head") == 0)
+            if istail or ishead:
                 tt = txt.split(" ")
                 nt = ntail
                 if len(tt) > 1:
                     try: nt = int(tt[1])
                     except: pass
-                off = max(len(logs) - nt, 0)
-
-                for l in logs[off:]:
+                if istail:
+                    off = max(len(logs) - nt, 0)
+                    li = logs[off:]
+                else:
+                    off = min(len(logs),nt)
+                    li = logs[:off]
+                for l in li:
                     msg =  "PRIVMSG %s : %s\r\n" % (me, l)
                     irc.send(msg)
                     time.sleep(1) # actually, the "flood limit" is 2 seconds on freenode, but for 25 msgs, we'll fly under the radar
-                irc.send("PRIVMSG %s : that's it.\r\n" % me)
+                #irc.send("PRIVMSG %s : that's it.\r\n" % me)
             else:
                 if targ != nick: # don't log cv2
                     line = "[%s] %s:\t%s" % (t,me,txt)
