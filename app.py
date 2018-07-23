@@ -82,11 +82,13 @@ def run_bot():
                 else:
                     off = min(len(logs),nt)
                     li = logs[:off]
+                c=0
                 for l in li:
+                    c += 1
                     msg =  "PRIVMSG %s : %s\r\n" % (me, l)
                     irc.send(msg)
                     time.sleep(1) # actually, the "flood limit" is 2 seconds on freenode, but for 25 msgs, we'll fly under the radar
-                #irc.send("PRIVMSG %s : that's it.\r\n" % me)
+                irc.send("PRIVMSG %s : %d msg.\r\n" % (me,c))
             else:
                 if targ != nick: # don't log cv2
                     line = "[%s] %s:\t%s" % (t,me,txt)
