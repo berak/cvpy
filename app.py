@@ -48,16 +48,25 @@ def run_bot():
         if m.find("PING") == 0:
             irc.send("PONG 12345\r\n")
 
-        me = m[1:m.find('!')] # whoo sent the msg
-        targ = channel # where *was* it sent to
-        to = channel # where *should* it go to now.
+        d,t = now()
+        me = m[1:m.find('!')] # who sent the msg
         pm = m.find("PRIVMSG %s :" % channel)
-        if pm<0:
-            pm = m.find("PRIVMSG %s :" % nick)
-            to = nick
         if pm > 0:
-            d,t = now()
-            txt = m[pm+10+len(to):-2]
+            txt = m[pm+10+len(channel):-2]
+            line = "[%s] %s:\t%s" % (t,me,txt)
+            logs.append(line)
+            if len(logs) > maxn:
+                del logs[0]
+        else:
+            pm = m.find("PRIVMSG %s :" % nick)
+            if pm < 0:
+                continue
+            txt = m[pm+10+len(nick):-2]
+
+            if txt.find("help") >= 0:
+                msg =  "PRIVMSG %s : .size || .tail [num] || .head [num]\r\n" % (me,)
+                irc.send(msg)
+                continue
             if txt.find(".clear") == 0:
                 logs=[]
                 msg =  "PRIVMSG %s : ok.\r\n" % (me,)
@@ -89,13 +98,7 @@ def run_bot():
                     irc.send(msg)
                     time.sleep(1) # actually, the "flood limit" is 2 seconds on freenode, but for 25 msgs, we'll fly under the radar
                 irc.send("PRIVMSG %s : %d msg.\r\n" % (me,c))
-            else:
-                if targ != nick: # don't log cv2
-                    line = "[%s] %s:\t%s" % (t,me,txt)
-                    logs.append(line)
-                    if len(logs) > maxn:
-                        del logs[0]
-                    #print(len(logs), line)
+
     irc.close()
 
 if __name__ == '__main__':
